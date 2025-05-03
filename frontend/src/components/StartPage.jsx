@@ -12,6 +12,8 @@ const StartPage = () => {
   const [activeChatId, setActiveChatId] = useState(1);
   const textareaRef = useRef(null);
   const messagesEndRef = useRef(null);
+  const [role, setRole] = useState(null);
+
 
   const replies = [
     "Сәлем, досым!",
@@ -26,9 +28,9 @@ const StartPage = () => {
 
   const handleSend = () => {
     if (message.trim() === "" && !file) return;
-
-    const newMessage = { text: message, sender: "user" };
-
+  
+    const newMessage = { text: message, sender: "user", file };
+  
     setChats((prevChats) =>
       prevChats.map((chat) =>
         chat.id === activeChatId
@@ -36,12 +38,12 @@ const StartPage = () => {
           : chat
       )
     );
-
+  
     // Ответ бота
     setTimeout(() => {
       const randomReply = replies[Math.floor(Math.random() * replies.length)];
       const botResponse = { text: randomReply, sender: "bot" };
-
+  
       setChats((prevChats) =>
         prevChats.map((chat) =>
           chat.id === activeChatId
@@ -50,11 +52,12 @@ const StartPage = () => {
         )
       );
     }, 1000);
-
+  
     setMessage("");
     setFile(null);
     document.getElementById("fileInput").value = null;
   };
+  
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -64,6 +67,12 @@ const StartPage = () => {
     setFile(null);
     document.getElementById("fileInput").value = null;
   };
+
+  const handleRoleSelect = (selectedRole) => {
+    setRole(selectedRole);
+  };
+  
+  
 
   const handleNewChat = () => {
     const newId = Date.now();
@@ -99,7 +108,8 @@ const StartPage = () => {
   const activeChat = chats.find((c) => c.id === activeChatId);
 
   return (
-    <div className="start-page">
+    <div className="main">
+      <div className="start-page">
       <button className="burger-btn" onClick={toggleS}>
         ☰
       </button>
@@ -117,12 +127,32 @@ const StartPage = () => {
       <div className="messages">
         {activeChat.messages.map((msg, index) => (
           <div key={index} className={`message ${msg.sender}`}>
-            {msg.text}
+            <div>{msg.text}</div>
+            {msg.file && (
+              <div className="file-in-message">
+                {msg.file.type.startsWith("image/") ? (
+                  <img
+                    src={URL.createObjectURL(msg.file)}
+                    alt="attached"
+                    className="attached-image"
+                  />
+                ) : (
+                  <a
+                    href={URL.createObjectURL(msg.file)}
+                    download={msg.file.name}
+                    className="file-download-link"
+                  >
+                    📎 {msg.file.name}
+                  </a>
+                )}
+              </div>
+            )}
           </div>
         ))}
         <div ref={messagesEndRef}></div>
       </div>
 
+      
       <div className="input-container chatgpt-style">
         <textarea
           ref={textareaRef}
@@ -138,7 +168,23 @@ const StartPage = () => {
           }}
           rows={1}
         />
-
+        {file && (
+        <div className="file-preview">
+          {file.type.startsWith("image/") ? (
+            <img
+              src={URL.createObjectURL(file)}
+              alt="preview"
+              className="preview-image"
+            />
+          ) : (
+            <p className="file-name">{file.name}</p>
+          )}
+          <button className="remove-file-button" onClick={removeFile} style={{marginLeft:'5px'}}>
+            х
+          </button>
+        </div>
+      )}
+        
         <label htmlFor="fileInput" className="icon-button">
           📎
         </label>
@@ -153,23 +199,25 @@ const StartPage = () => {
           📤
         </button>
       </div>
+      <div className="role-buttons">
+        <button
+          className={`role-button ${role === "ученик" ? "selected" : ""}`}
+          onClick={() => handleRoleSelect("ученик")}
+        >
+          Я ученик
+        </button>
+        <button
+          className={`role-button ${role === "учитель" ? "selected" : ""}`}
+          onClick={() => handleRoleSelect("учитель")}
+        >
+          Я учитель
+        </button>
+      </div>
 
-      {file && (
-        <div className="file-preview">
-          {file.type.startsWith("image/") ? (
-            <img
-              src={URL.createObjectURL(file)}
-              alt="preview"
-              className="preview-image"
-            />
-          ) : (
-            <p className="file-name">{file.name}</p>
-          )}
-          <button className="remove-file-button" onClick={removeFile}>
-            х
-          </button>
-        </div>
-      )}
+
+
+      
+    </div>
     </div>
   );
 };
