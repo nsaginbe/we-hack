@@ -23,7 +23,8 @@ public class MaterialGeneratorService {
         // Получаем содержимое для обработки
         if (request.getFileId() != null && !request.getFileId().isEmpty()) {
             content = fileProcessorService.getFileText(request.getFileId());
-        } else {
+        }
+        else {
             content = request.getMessage();
         }
 

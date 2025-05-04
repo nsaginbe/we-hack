@@ -28,7 +28,8 @@ public class AIService {
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("model", aiConfig.getModel());
         requestBody.put("messages", Collections.singletonList(
-                Map.of("role", "user", "content", prompt)
+                Map.of("role", "user",
+                        "content", prompt)
         ));
         requestBody.put("temperature", 0.7);
 

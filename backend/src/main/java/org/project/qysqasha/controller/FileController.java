@@ -22,6 +22,7 @@ public class FileController {
     public ResponseEntity<FileUploadResponse> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
             FileUploadResponse response = fileProcessorService.processFile(file);
+
             return ResponseEntity.ok(response);
         }
         catch (IOException e) {
