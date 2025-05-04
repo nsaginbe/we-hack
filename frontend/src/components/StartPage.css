@@ -145,6 +145,7 @@
   .message.bot {
     background-color: #1C252C;
     align-self: flex-start;
+    white-space: pre-line;
   }
 
   /* Анимация для плавного появления сообщений */
@@ -210,5 +211,31 @@
     background-color: #B7A7AE;
     color: black;
     border-color: #B7A7AE;
+  }
+  .quiz-button {
+    margin-top: 8px;
+    padding: 6px 12px;
+    background-color: #B7A7AE;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .quiz-button:hover {
+    background-color: #a5979e;
+  } 
+  .answers-button {
+    margin-top: 8px;
+    padding: 6px 12px;
+    background-color: #B7A7AE;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .answers-button:hover {
+    background-color: #a5979e;
   }
   

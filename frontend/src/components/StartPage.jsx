@@ -29,35 +29,76 @@ const StartPage = () => {
   const handleSend = () => {
     if (message.trim() === "" && !file) return;
   
+    // Добавляем сообщение пользователя в чат
     const newMessage = { text: message, sender: "user", file };
   
+    // Выбираем случайный ответ бота
+    const randomReply = replies[Math.floor(Math.random() * replies.length)];
+  
+    // Ответ бота с кнопкой квиза
+    const botMessageWithQuizButton = {
+      text: randomReply,
+      sender: "bot",
+      showQuizButton: true,
+    };
+  
+    // Обновляем чат
     setChats((prevChats) =>
       prevChats.map((chat) =>
         chat.id === activeChatId
-          ? { ...chat, messages: [...chat.messages, newMessage] }
+          ? {
+              ...chat,
+              messages: [...chat.messages, newMessage, botMessageWithQuizButton],
+            }
           : chat
       )
     );
   
-    // Ответ бота
-    setTimeout(() => {
-      const randomReply = replies[Math.floor(Math.random() * replies.length)];
-      const botResponse = { text: randomReply, sender: "bot" };
-  
-      setChats((prevChats) =>
-        prevChats.map((chat) =>
-          chat.id === activeChatId
-            ? { ...chat, messages: [...chat.messages, botResponse] }
-            : chat
-        )
-      );
-    }, 1000);
-  
+    // Очищаем состояние
     setMessage("");
     setFile(null);
     document.getElementById("fileInput").value = null;
   };
   
+
+  const handleQuiz = (topic) => {
+    const shortTopic = topic.length > 50 ? topic.slice(0, 50) + "..." : topic;
+
+const quizMessage = {
+  text: `📝 Квиз по теме: *${shortTopic}*
+
+    1️⃣ Что означает HTML?
+    - A) HyperText Markup Language
+    - B) HighText Machine Language
+    - C) HyperTool Multi Language
+
+    2️⃣ Какой тег используется для создания ссылки?
+    - A) <link>
+    - B) <a>
+    - C) <href>
+
+    3️⃣ Как правильно подключить CSS к HTML?
+    - A) <style src="style.css">
+    - B) <link rel="stylesheet" href="style.css">
+    - C) <css link="style.css">`,
+      sender: "bot",
+      showAnswersButton: true // флаг, чтобы отобразить кнопку
+    };
+
+
+
+  
+    setChats((prevChats) =>
+      prevChats.map((chat) =>
+        chat.id === activeChatId
+          ? { ...chat, messages: [...chat.messages, quizMessage] }
+          : chat
+      )
+    );
+  };
+  
+  
+
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -104,6 +145,25 @@ const StartPage = () => {
         Math.min(textareaRef.current.scrollHeight, 200) + "px";
     }
   }, [message]);
+  const handleShowAnswers = () => {
+    const answersMessage = {
+      text: `✅ Правильные ответы:
+  
+  1️⃣ A) HyperText Markup Language  
+  2️⃣ B) <a>  
+  3️⃣ B) <link rel="stylesheet" href="style.css">`,
+      sender: "bot",
+    };
+  
+    setChats((prevChats) =>
+      prevChats.map((chat) =>
+        chat.id === activeChatId
+          ? { ...chat, messages: [...chat.messages, answersMessage] }
+          : chat
+      )
+    );
+  };
+  
 
   const activeChat = chats.find((c) => c.id === activeChatId);
 
@@ -128,6 +188,24 @@ const StartPage = () => {
         {activeChat.messages.map((msg, index) => (
           <div key={index} className={`message ${msg.sender}`}>
             <div>{msg.text}</div>
+            {msg.showQuizButton && (
+              <button
+                className="quiz-button"
+                onClick={() => handleQuiz(msg.text)}
+              >
+                Сделать квиз
+              </button>
+            )}
+            {msg.showAnswersButton && (
+              <button
+                className="answers-button"
+                onClick={handleShowAnswers}
+              >
+                Посмотреть ответы
+              </button>
+            )}
+
+
             {msg.file && (
               <div className="file-in-message">
                 {msg.file.type.startsWith("image/") ? (
